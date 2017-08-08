@@ -1,0 +1,13 @@
+---
+- hosts: all
+  gather_facts: False
+  tasks:
+  - name: Downloading cloudlinux
+    get_url:
+     url: https://repo.cloudlinux.com/cloudlinux/sources/cln/cldeploy
+     dest: /root/cldeploy
+     mode: 0755
+  - name: Installing cloudlinux
+    shell:
+     chdir: /root
+     cmd: sh cldeploy -i

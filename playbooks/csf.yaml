@@ -1,0 +1,21 @@
+---
+- hosts: all
+  gather_facts: False
+  tasks:
+  - name: Installing yum packages
+    with_items: [libselinux-python]
+    yum: name={{item}} state=present
+  - name: downloading csf
+    command: creates=/usr/src/csf.tgz chdir=/usr/src wget https://download.configserver.com/csf.tgz
+  - name: untarring csf.tgz
+    command:  chdir=/usr/src creates=/usr/src/csf tar zxf csf.tgz
+  - name: deploying csf
+    command: chdir=/usr/src/csf creates=/etc/csf sh install.sh
+  - name: deploying csf config file
+    copy: src=ansibleFiles/csf.conf dest=/etc/csf/csf.conf
+  - command: csf -a {{item}}
+    with_items: [66.35.95.190]
+  - name: Deploying csf.post
+    template: src=ansibleFiles/csfpost.sh dest=/etc/csf/csfpost.sh mode=0755
+  - name: reloading csf
+    command: csf -r

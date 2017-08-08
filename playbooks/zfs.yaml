@@ -1,0 +1,17 @@
+---
+- hosts: all
+  gather_facts: False
+  tasks:
+  - name: deploying yum packages
+    yum: name={{item}} state=present
+    with_items: [libselinux-python,gcc,gcc-c++,sysstat,strace,automake,autoconf,epel-release,git,wget,libselinux-python,openssl-devel]
+  - name: deploying epel yum packages
+    yum: name={{item}} state=present
+    with_items: []
+  - name: Installing ZFS Repo
+    command: creates=/etc/yum.repos.d/zfs.repo rpm -ivh http://download.zfsonlinux.org/epel/zfs-release.el6.noarch.rpm
+  - name: Installing ZFS
+    yum: name={{item}} state=present
+    with_items: [zfs]
+  - shell: 'lsmod | grep zfs || modprobe zfs'
+    
